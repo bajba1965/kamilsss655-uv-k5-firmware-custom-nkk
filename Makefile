@@ -62,7 +62,7 @@ AUTHOR_STRING := Bajba
 #   	VERSION_STRING := $(shell git rev-parse --short HEAD)
 #	endif
 #endif
-VERSION_STRING := 0.0.1
+VERSION_STRING := v0.0.7
 
 TARGET = firmware.$(AUTHOR_STRING).$(VERSION_STRING)
 #TARGET = firmware.nkk
