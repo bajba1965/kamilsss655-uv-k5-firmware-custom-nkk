@@ -996,12 +996,33 @@ void BK4819_TurnsOffTones_TurnsOnRX(void)
 #ifdef ENABLE_AIRCOPY
 	void BK4819_SetupAircopy(void)
 	{
+		// Full FSK modem restore for AirCopy.
+		// Messenger (and Roger/MDC) overwrite these; stock SetupAircopy
+		// only set a subset, which broke AirCopy RX when ENABLE_MESSENGER=1.
+
+		// Tone2 / FSK baud ~1200 bps (stock AirCopy)
 		BK4819_WriteRegister(BK4819_REG_70, 0x00E0);    // Enable Tone2, tuning gain 48
 		BK4819_WriteRegister(BK4819_REG_72, 0x3065);    // Tone2 baudrate 1200
-		BK4819_WriteRegister(BK4819_REG_58, 0x00C1);    // FSK Enable, FSK 1.2K RX Bandwidth, Preamble 0xAA or 0x55, RX Gain 0, RX Mode
-		                                                // (FSK1.2K, FSK2.4K Rx and NOAA SAME Rx), TX Mode FSK 1.2K and FSK 2.4K Tx
-		BK4819_WriteRegister(BK4819_REG_5C, 0x5665);    // Enable CRC among other things we don't know yet
-		BK4819_WriteRegister(BK4819_REG_5D, 0x4700);    // FSK Data Length 72 Bytes (0xabcd + 2 byte length + 64 byte payload + 2 byte CRC + 0xdcba)
+
+		// FSK enable, 1.2K RX/TX mode, default preamble type
+		BK4819_WriteRegister(BK4819_REG_58, 0x00C1);
+
+		// CRC enable (AirCopy relies on HW + software CRC)
+		BK4819_WriteRegister(BK4819_REG_5C, 0x5665);
+
+		// Data length = 72 bytes:
+		// 0xABCD + 2 byte offset + 64 byte payload + 2 byte CRC + 0xDCBA
+		BK4819_WriteRegister(BK4819_REG_5D, 0x4700);
+
+		// TX almost-empty = 64, RX almost-full = 4 words
+		// (AirCopy interrupt historically reads 4 words per IRQ)
+		BK4819_WriteRegister(BK4819_REG_5E, (64u << 3) | (4u << 0));
+
+		// Restore FSK sync word to BK4819 datasheet defaults.
+		// Messenger sets 0x5555 / 0x55AA; leaving those active
+		// mis-aligns AirCopy frames (RCV stays 0, error counter rises).
+		BK4819_WriteRegister(BK4819_REG_5A, 0x85CF);    // Sync byte0=0x85, byte1=0xCF
+		BK4819_WriteRegister(BK4819_REG_5B, 0xAB45);    // Sync byte2=0xAB, byte3=0x45
 	}
 #endif
 
@@ -1617,6 +1638,12 @@ void BK4819_SendFSKData(uint16_t *pData)
 
 void BK4819_PrepareFSKReceive(void)
 {
+	// Ensure AirCopy FSK parameters are active before arming RX.
+	// Safe even if caller already invoked SetupAircopy().
+#ifdef ENABLE_AIRCOPY
+	BK4819_SetupAircopy();
+#endif
+
 	BK4819_ResetFSK();
 	BK4819_WriteRegister(BK4819_REG_02, 0);
 	BK4819_WriteRegister(BK4819_REG_3F, 0);
