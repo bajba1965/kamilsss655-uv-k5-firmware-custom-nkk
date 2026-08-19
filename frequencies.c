@@ -23,19 +23,19 @@
 
 // the BK4819 has 2 bands it covers, 18MHz ~ 630MHz and 760MHz ~ 1300MHz
 const freq_band_table_t BX4819_band1 = { 1700000,  63000000};
-const freq_band_table_t BX4819_band2 = {84000000, 130000000};
+const freq_band_table_t BX4819_band2 = {76000000, 130000000};
 
 const freq_band_table_t frequencyBandTable[7] =
 {
 	#ifndef ENABLE_WIDE_RX
 		// QS original
-		{.lower =  5000000,  .upper =  7600000},
+		{.lower =  BX4819_band1.lower,  .upper =  7600000},
 		{.lower = 10800000,  .upper = 13700000},
 		{.lower = 13700000,  .upper = 17400000},
 		{.lower = 17400000,  .upper = 35000000},
 		{.lower = 35000000,  .upper = 40000000},
 		{.lower = 40000000,  .upper = 47000000},
-		{.lower = 47000000,  .upper = 60000000}
+		{.lower = 47000000,  .upper = 60000000},
 	#else
 		// extended range
 		{.lower =  BX4819_band1.lower, .upper =  10800000},
