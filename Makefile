@@ -11,7 +11,7 @@ ENABLE_LTO                    := 1
 
 # ---- STOCK QUANSHENG FERATURES ----
 ENABLE_UART                   := 1
-ENABLE_AIRCOPY                := 0
+ENABLE_AIRCOPY                := 1
 ENABLE_FMRADIO                := 1
 ENABLE_NOAA                   := 0
 ENABLE_VOICE                  := 0
@@ -48,8 +48,8 @@ ENABLE_MESSENGER                        := 1
 ENABLE_MESSENGER_DELIVERY_NOTIFICATION  := 1
 ENABLE_MESSENGER_FSK_MUTE               := 1
 ENABLE_MESSENGER_NOTIFICATION           := 1
-ENABLE_MESSENGER_UART                   := 0
-ENABLE_ENCRYPTION                       := 1
+ENABLE_MESSENGER_UART                   := 1
+ENABLE_ENCRYPTION                       := 0
 
 #############################################################
 
@@ -238,15 +238,15 @@ endif
 CFLAGS =
 ifeq ($(ENABLE_CLANG),0)
 	# Highest optimization settings (possible breaking changes):
-	CFLAGS += -Oz -Wall -Werror -mcpu=cortex-m0 -fno-delete-null-pointer-checks -std=c11 -MMD
+	CFLAGS += -Oz -Wall  -mcpu=cortex-m0 -fno-delete-null-pointer-checks -std=c11 -MMD
 	# Standard settings:
-	#CFLAGS += -Os -Wall -Werror -mcpu=cortex-m0 -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=c11 -MMD
-	#CFLAGS += -Os -Wall -Werror -mcpu=cortex-m0 -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=c99 -MMD
-	#CFLAGS += -Os -Wall -Werror -mcpu=cortex-m0 -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=gnu99 -MMD
-	#CFLAGS += -Os -Wall -Werror -mcpu=cortex-m0 -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=gnu11 -MMD
+	#CFLAGS += -Os -Wall  -mcpu=cortex-m0 -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=c11 -MMD
+	#CFLAGS += -Os -Wall  -mcpu=cortex-m0 -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=c99 -MMD
+	#CFLAGS./compile-with-docker.sh CUSTOM += -Os -Wall  -mcpu=cortex-m0 -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=gnu99 -MMD
+	#CFLAGS += -Os -Wall  -mcpu=cortex-m0 -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=gnu11 -MMD
 else
 	# Oz needed to make it fit on flash
-	CFLAGS += -Oz -Wall -Werror -mcpu=cortex-m0 -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=c11 -MMD
+	CFLAGS += -Oz -Wall  -mcpu=cortex-m0 -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=c11 -MMD
 endif
 
 ifeq ($(ENABLE_LTO),1)
